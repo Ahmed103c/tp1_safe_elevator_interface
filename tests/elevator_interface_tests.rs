@@ -60,7 +60,7 @@ fn close_doors_with_no_open_doors_returns_error() {
 
     assert_eq!(result, Err(ElevatorError::DoorsAlreadyClosed));
 }
-/*
+
 #[test]
 fn status_returns_snapshot() {
     let mut elevator = Elevator::new(0).expect("valid start floor");
@@ -72,7 +72,7 @@ fn status_returns_snapshot() {
     assert_eq!(status.state, State::MovingUp);
     assert_eq!(status.queue, vec![4]);
 }
-
+/*
 #[test]
 fn duplicate_and_current_floor_calls_are_ignored() {
     let mut elevator = Elevator::new(1).expect("valid start floor");

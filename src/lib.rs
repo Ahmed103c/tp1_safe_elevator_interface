@@ -13,6 +13,14 @@ pub struct Elevator {
     queue: Vec<i32>,
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub struct ElevatorStatus {
+    pub floor: i32,
+    pub state: State,
+    pub queue: Vec<i32>,
+}
+
+
 #[derive(Debug, PartialEq)] 
 pub enum ElevatorError {
     InvalidFloor(i32),
@@ -82,8 +90,8 @@ impl  Elevator {
     pub fn state(&self) -> State{
         self.state
     }
-    pub fn queue(&self) -> &Vec<i32>{
-        &self.queue
+    pub fn queue(&self) -> Vec<i32>{
+        self.queue.clone()
     }
 
     pub fn open_doors(&mut self) -> Result<(), ElevatorError> {
@@ -101,5 +109,9 @@ impl  Elevator {
         self.state = State::Idle;
         Ok(())
     }
+
+    pub fn status(&self) -> ElevatorStatus{
+        ElevatorStatus { floor: self.current_floor, state: self.state , queue: self.queue() }
+    } 
 }
 
