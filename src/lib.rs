@@ -6,35 +6,37 @@ pub enum State {
     DoorsOpen,
 }
 
+#[derive(Debug)]
 pub struct Elevator {
     current_floor: i32,
     state: State,
     queue: Vec<i32>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)] 
 pub enum ElevatorError {
-    InvalidFloor
-
+    InvalidFloor(i32),
+    CannotMoveDoorsOpen
 }
 
 impl  Elevator {
     pub fn new(start_floor:i32) -> Result<Elevator,ElevatorError>{
-        if start_floor < 0{
-            return Err(ElevatorError::InvalidFloor);
+        if (start_floor < 0) | (start_floor > 5) {
+            return Err(ElevatorError::InvalidFloor(start_floor));
         }
         Ok(Elevator { current_floor: start_floor, state: State::Idle, queue: Vec::new() })
     }
 
     pub fn call(&mut self, client_floor:i32) -> Result<(),ElevatorError>{
-        if client_floor < 0{
-            return Err(ElevatorError::InvalidFloor);
+        if (client_floor < 0) | (client_floor > 5) {
+            return Err(ElevatorError::InvalidFloor(client_floor));
         }
-        if client_floor > self.current_floor {
+        else if client_floor > self.current_floor {
             self.state = State::MovingUp;
         } else if client_floor < self.current_floor {
             self.state = State::MovingDown;
         }
+        
 
         self.queue.push(client_floor);
         Ok(())
@@ -63,7 +65,10 @@ impl  Elevator {
                     }
                 }
             }
-            State::Idle | State::DoorsOpen => {
+            State::DoorsOpen => {
+                return Err(ElevatorError::CannotMoveDoorsOpen);
+            }
+            State::Idle => {
 
             }
         }
@@ -73,6 +78,7 @@ impl  Elevator {
     pub fn floor(&self) -> i32{
         self.current_floor
     }
+    //L'importance de & dans les tests 
     pub fn state(&self) -> State{
         self.state
     }
@@ -80,4 +86,9 @@ impl  Elevator {
         &self.queue
     }
 
+    pub fn open_doors(&mut self) -> Result<(), ElevatorError> {
+        self.state = State::DoorsOpen;
+        Ok(())
+    }   
 }
+

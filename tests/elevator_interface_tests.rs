@@ -5,7 +5,7 @@ fn call_and_step_reaches_destination_and_opens_doors() {
     let mut elevator = Elevator::new(0).expect("valid start floor");
 
     elevator.call(3).expect("call accepted");
-    assert_eq!(elevator.state(), State::MovingUp);
+    assert_eq!(elevator.state(), State::MovingUp); // dans la def de la fonction state() n'oublie surtout pas &self au lieu de self
 
     elevator.step().expect("step 1");
     assert_eq!(elevator.floor(), 1);
@@ -20,7 +20,7 @@ fn call_and_step_reaches_destination_and_opens_doors() {
     assert_eq!(elevator.state(), State::DoorsOpen);
     assert!(elevator.queue().is_empty());
 }
-/* 
+
 #[test]
 fn step_with_open_doors_returns_error() {
     let mut elevator = Elevator::new(0).expect("valid start floor");
@@ -31,6 +31,7 @@ fn step_with_open_doors_returns_error() {
     assert_eq!(result, Err(ElevatorError::CannotMoveDoorsOpen));
 }
 
+
 #[test]
 fn call_with_invalid_floor_returns_error() {
     let mut elevator = Elevator::new(0).expect("valid start floor");
@@ -40,6 +41,7 @@ fn call_with_invalid_floor_returns_error() {
     assert_eq!(result, Err(ElevatorError::InvalidFloor(9)));
 }
 
+/* 
 #[test]
 fn open_doors_while_moving_returns_error() {
     let mut elevator = Elevator::new(0).expect("valid start floor");
