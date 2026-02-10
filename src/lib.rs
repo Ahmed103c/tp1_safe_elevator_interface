@@ -16,7 +16,8 @@ pub struct Elevator {
 #[derive(Debug, PartialEq)] 
 pub enum ElevatorError {
     InvalidFloor(i32),
-    CannotMoveDoorsOpen
+    CannotMoveDoorsOpen,
+    CannotOpenWhileMoving
 }
 
 impl  Elevator {
@@ -36,8 +37,6 @@ impl  Elevator {
         } else if client_floor < self.current_floor {
             self.state = State::MovingDown;
         }
-        
-
         self.queue.push(client_floor);
         Ok(())
     }
@@ -87,6 +86,9 @@ impl  Elevator {
     }
 
     pub fn open_doors(&mut self) -> Result<(), ElevatorError> {
+        if (self.state == State::MovingUp) | (self.state == State::MovingDown){
+            return Err(ElevatorError::CannotOpenWhileMoving);
+        } 
         self.state = State::DoorsOpen;
         Ok(())
     }   
