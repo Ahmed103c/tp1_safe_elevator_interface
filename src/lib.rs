@@ -17,7 +17,8 @@ pub struct Elevator {
 pub enum ElevatorError {
     InvalidFloor(i32),
     CannotMoveDoorsOpen,
-    CannotOpenWhileMoving
+    CannotOpenWhileMoving,
+    DoorsAlreadyClosed
 }
 
 impl  Elevator {
@@ -86,11 +87,19 @@ impl  Elevator {
     }
 
     pub fn open_doors(&mut self) -> Result<(), ElevatorError> {
-        if (self.state == State::MovingUp) | (self.state == State::MovingDown){
+        if matches!(self.state, State::MovingUp | State::MovingDown | State::DoorsOpen){
             return Err(ElevatorError::CannotOpenWhileMoving);
         } 
         self.state = State::DoorsOpen;
         Ok(())
     }   
+
+    pub fn close_doors(&mut self) -> Result<(), ElevatorError> {
+        if self.state != State::DoorsOpen{
+            return Err(ElevatorError::DoorsAlreadyClosed);
+        } 
+        self.state = State::Idle;
+        Ok(())
+    }
 }
 

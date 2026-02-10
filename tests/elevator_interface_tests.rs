@@ -51,7 +51,7 @@ fn open_doors_while_moving_returns_error() {
 
     assert_eq!(result, Err(ElevatorError::CannotOpenWhileMoving));
 }
-/* 
+
 #[test]
 fn close_doors_with_no_open_doors_returns_error() {
     let mut elevator = Elevator::new(0).expect("valid start floor");
@@ -60,7 +60,7 @@ fn close_doors_with_no_open_doors_returns_error() {
 
     assert_eq!(result, Err(ElevatorError::DoorsAlreadyClosed));
 }
-
+/*
 #[test]
 fn status_returns_snapshot() {
     let mut elevator = Elevator::new(0).expect("valid start floor");
