@@ -26,7 +26,8 @@ pub enum ElevatorError {
     InvalidFloor(i32),
     CannotMoveDoorsOpen,
     CannotOpenWhileMoving,
-    DoorsAlreadyClosed
+    DoorsAlreadyClosed,
+    EmptyQueue,
 }
 
 impl  Elevator {
@@ -37,16 +38,24 @@ impl  Elevator {
         Ok(Elevator { current_floor: start_floor, state: State::Idle, queue: Vec::new() })
     }
 
-    pub fn call(&mut self, client_floor:i32) -> Result<(),ElevatorError>{
-        if (client_floor < 0) | (client_floor > 5) {
+    pub fn call(&mut self, client_floor: i32) -> Result<(), ElevatorError> {
+        if client_floor < 0 || client_floor > 5 {
             return Err(ElevatorError::InvalidFloor(client_floor));
         }
-        else if client_floor > self.current_floor {
-            self.state = State::MovingUp;
-        } else if client_floor < self.current_floor {
-            self.state = State::MovingDown;
+
+        if client_floor == self.current_floor || self.queue.contains(&client_floor) {
+            return Ok(());
         }
         self.queue.push(client_floor);
+        
+
+        if self.state == State::Idle {
+            if client_floor > self.current_floor {
+                self.state = State::MovingUp;
+            } else {
+                self.state = State::MovingDown;
+            }
+        }
         Ok(())
     }
 
@@ -54,9 +63,9 @@ impl  Elevator {
         match self.state {
             State::MovingUp => {
                 if let Some(&destination) = self.queue.first() {
-                    self.current_floor += 1;  // Monte d'abord
+                    self.current_floor += 1;  
                     
-                    if self.current_floor == destination {  // Puis vérifie
+                    if self.current_floor == destination {  
                         self.state = State::DoorsOpen;
                         self.queue.remove(0);
                     }
@@ -65,9 +74,9 @@ impl  Elevator {
 
             State::MovingDown => {
                 if let Some(&destination) = self.queue.first() {
-                    self.current_floor -= 1;  // Descend d'abord
+                    self.current_floor -= 1;  
                     
-                    if self.current_floor == destination {  // Puis vérifie
+                    if self.current_floor == destination {  
                         self.state = State::DoorsOpen;
                         self.queue.remove(0);
                     }
@@ -77,7 +86,9 @@ impl  Elevator {
                 return Err(ElevatorError::CannotMoveDoorsOpen);
             }
             State::Idle => {
-
+                if self.queue.is_empty() {
+                    return Err(ElevatorError::EmptyQueue);
+                }
             }
         }
         Ok(())
@@ -103,10 +114,19 @@ impl  Elevator {
     }   
 
     pub fn close_doors(&mut self) -> Result<(), ElevatorError> {
-        if self.state != State::DoorsOpen{
+        if self.state != State::DoorsOpen {
             return Err(ElevatorError::DoorsAlreadyClosed);
-        } 
-        self.state = State::Idle;
+        }
+        // Si queue non vide, déterminer la direction
+        if let Some(&next) = self.queue.first() {
+            if next > self.current_floor {
+                self.state = State::MovingUp;
+            } else {
+                self.state = State::MovingDown;
+            }
+        } else {
+            self.state = State::Idle;
+        }
         Ok(())
     }
 

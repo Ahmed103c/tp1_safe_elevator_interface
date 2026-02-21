@@ -72,7 +72,7 @@ fn status_returns_snapshot() {
     assert_eq!(status.state, State::MovingUp);
     assert_eq!(status.queue, vec![4]);
 }
-/*
+
 #[test]
 fn duplicate_and_current_floor_calls_are_ignored() {
     let mut elevator = Elevator::new(1).expect("valid start floor");
@@ -104,4 +104,3 @@ fn step_with_empty_queue_returns_error() {
     assert_eq!(result, Err(ElevatorError::EmptyQueue));
     assert_eq!(elevator.state(), State::Idle);
 }
-*/
